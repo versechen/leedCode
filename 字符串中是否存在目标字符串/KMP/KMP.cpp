@@ -10,7 +10,7 @@ void preKmp(const char* p, vector<int>& next)//fill next，目标与模式某位
     {
         while (j > -1 && p[i] != p[j])//找到i对应的最大前缀
         {
-            j = next[j];//确定新的前缀起始位
+            j = next[j];//确定最大前缀位
         }
         i++;//在新的起始位前进
         j++;//在新的起始位前进
@@ -22,7 +22,7 @@ void preKmp(const char* p, vector<int>& next)//fill next，目标与模式某位
         }
         else
         {
-            next[i] = j;//确定next[i]的数值
+            next[i] = j;//确定next[i]的数值，*退出时，i为size大小，保留的是整个模式的最大有效前缀。
         }
     }
 }
@@ -31,7 +31,7 @@ void KMP(string p, string t)
 {
     size_t m = p.size();
     size_t n = t.size();
-    vector<int> kmpNext(m+1,0);
+    vector<int> kmpNext(m+1,0);//注意，size会大1,目的是最后一位存整个目标的最大前缀
     preKmp(p.c_str(),kmpNext);
     
     int i = 0;
@@ -41,16 +41,16 @@ void KMP(string p, string t)
     {
         while (j > -1 && p[j] != t[i])
         {
-            j = kmpNext[j];
+            j = kmpNext[j];//改变最大前缀的位置，保证新的p[j]不等于旧的p[j],但是未必和t[i]相等
         }
 
-        j++;
-        i++;
+        j++;//i之前的已经相等，前进
+        i++;//j之前的已经相等，前进
 
-        if (j >= m)
+        if (j >= m)//如果j到了有效位的后一位，说明已经完全配置上了
         {
-            cout << "find same string in t, index is " << i - j << endl;
-            j = kmpNext[j];
+            cout << "find same string in t, index is " << i - j << endl;//输出目标匹配的起始索引
+            j = kmpNext[j];//j是整个模式的最大前缀。继续进行对比，会复用已经匹配上的
         }
     }
 }
